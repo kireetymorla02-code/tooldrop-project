@@ -1,0 +1,89 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* ROOT — MUST NOT BLOCK VIDEO */
+.splash-root {
+  position: relative;
+  z-index: 1;   /* above video */
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: transparent; /* 🔥 KEY FIX */
+}
+
+/* CONTENT */
+.splash-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* LIGHT STREAK */
+.light-streak {
+  position: absolute;
+  width: 200%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, white, transparent);
+  top: 40%;
+  left: -100%;
+  animation: streak 1.5s ease;
+}
+
+@keyframes streak {
+  from { left: -100%; opacity: 0; }
+  50% { opacity: 1; }
+  to { left: 100%; opacity: 0; }
+}
+
+/* LOGO */
+.logo-text {
+  font-size: 64px;
+  letter-spacing: 12px;
+  color: white;
+
+  text-shadow:
+    0 0 10px rgba(255,255,255,0.6),
+    0 0 25px rgba(255,255,255,0.4);
+}
+
+/* TAGLINE */
+.tagline {
+  margin-top: 10px;
+  color: #ccc;
+}
+
+/* ENTER */
+.enter-text {
+  margin-top: 20px;
+  display: block;
+  color: #888;
+}
+
+/* ZOOM */
+.zoom-logo {
+  position: relative;
+  z-index: 2;
+
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.zoom-logo h1 {
+  font-size: 80px;
+  color: white;
+  letter-spacing: 12px;
+  animation: zoom 2s forwards;
+}
+
+@keyframes zoom {
+  from { transform: scale(1); }
+  to { transform: scale(5); opacity: 0; }
+}

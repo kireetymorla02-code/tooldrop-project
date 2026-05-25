@@ -1,38 +1,377 @@
-.App {
-  text-align: center;
+body,
+html{
+  margin:0;
+  padding:0;
+  overflow:hidden;
+  font-family:Arial,sans-serif;
+  background:black;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* VIDEO */
+
+.video-container{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:-100;
+  overflow:hidden;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.bg-video{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.overlay{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.45);
+}
+
+/* FADE */
+
+.video-fade{
+  animation:fadeVideo 1.5s forwards;
+}
+
+@keyframes fadeVideo{
+  to{
+    opacity:0;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* CENTER */
+
+.center{
+  width:100%;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  position:relative;
+  z-index:5;
 }
 
-.App-link {
-  color: #61dafb;
+/* SPLASH */
+
+.splash-content{
+  text-align:center;
+  cursor:pointer;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.logo-text{
+  font-size:100px;
+  letter-spacing:10px;
+  margin:0;
+  animation:glow 2s infinite alternate;
+}
+
+.tap-text{
+  margin-top:20px;
+  color:#ddd;
+  font-size:20px;
+  animation:blink 1.5s infinite;
+}
+
+.zoom-logo{
+  font-size:120px;
+  font-weight:bold;
+  animation:zoomOut 1.8s forwards;
+}
+
+/* LOGIN */
+
+.glass-box{
+  width:360px;
+  padding:40px;
+  border-radius:25px;
+  background:rgba(0,0,0,0.35);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.15);
+  text-align:center;
+}
+
+.glass-box h1{
+  margin-bottom:25px;
+  letter-spacing:5px;
+}
+
+/* ROLE */
+
+.role-buttons{
+  display:flex;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.role-buttons button{
+  flex:1;
+}
+
+.active-role{
+  background:#c40000 !important;
+  color:white;
+}
+
+/* INPUT */
+
+input{
+  width:100%;
+  padding:15px;
+  margin-top:12px;
+  border:none;
+  border-radius:12px;
+  box-sizing:border-box;
+  outline:none;
+}
+
+/* BUTTON */
+
+button{
+  width:100%;
+  padding:15px;
+  margin-top:15px;
+  border:none;
+  border-radius:12px;
+  background:white;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  transform:scale(1.02);
+}
+
+/* WELCOME */
+
+.welcome-screen{
+  position:fixed;
+  width:100%;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  z-index:20;
+}
+
+.welcome-screen h1{
+  font-size:70px;
+  letter-spacing:8px;
+}
+
+.welcome-fade{
+  animation:fadeWelcome 1.5s forwards;
+}
+
+@keyframes fadeWelcome{
+  to{
+    opacity:0;
   }
-  to {
-    transform: rotate(360deg);
+}
+
+/* MERCEDES UI */
+
+.mercedes-ui{
+  width:100%;
+  height:100vh;
+  display:flex;
+  background:
+  linear-gradient(
+    135deg,
+    #050505,
+    #130000
+  );
+  color:white;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  width:240px;
+  background:#0a0a0a;
+  border-right:1px solid rgba(255,255,255,0.08);
+  padding:40px 25px;
+}
+
+.sidebar h2{
+  margin-bottom:50px;
+  letter-spacing:5px;
+}
+
+.menu{
+  padding:16px;
+  border-radius:12px;
+  margin-bottom:10px;
+  color:#bbb;
+  transition:0.3s;
+  cursor:pointer;
+}
+
+.menu:hover{
+  background:#171717;
+  color:white;
+}
+
+.active-menu{
+  background:#c40000;
+  color:white;
+}
+
+/* MAIN */
+
+.main-panel{
+  flex:1;
+  padding:40px;
+}
+
+/* TOP */
+
+.top-panel{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.top-panel h1{
+  font-size:52px;
+  margin:0;
+}
+
+.top-panel p{
+  color:#aaa;
+}
+
+/* SEARCH */
+
+.search-bar{
+  width:320px;
+  background:#111;
+  color:white;
+  border:1px solid #333;
+}
+
+/* GRID */
+
+.car-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:30px;
+  margin-top:50px;
+}
+
+/* CARD */
+
+.car-card{
+  background:#111;
+  border-radius:25px;
+  overflow:hidden;
+  transition:0.4s;
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+.car-card:hover{
+  transform:translateY(-10px);
+  box-shadow:
+  0 0 40px rgba(255,0,0,0.25);
+}
+
+.car-card img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+}
+
+.card-info{
+  padding:20px;
+}
+
+.card-info h2{
+  margin:0;
+  font-size:28px;
+}
+
+.card-info p{
+  color:#aaa;
+}
+
+/* OPTIONS */
+
+.service-options{
+  display:flex;
+  gap:20px;
+  margin-top:40px;
+}
+
+.option-box{
+  background:#171717;
+  padding:18px 28px;
+  border-radius:16px;
+  transition:0.3s;
+  cursor:pointer;
+}
+
+.option-box:hover{
+  background:#c40000;
+}
+
+/* ANIMATIONS */
+
+.fade-in{
+  animation:fadeIn 1.5s;
+}
+
+.fade-up{
+  animation:fadeUp 1s;
+}
+
+@keyframes fadeIn{
+  from{opacity:0;}
+  to{opacity:1;}
+}
+
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(30px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+@keyframes glow{
+  from{
+    text-shadow:
+      0 0 10px white,
+      0 0 20px white;
+  }
+  to{
+    text-shadow:
+      0 0 25px white,
+      0 0 40px white;
+  }
+}
+
+@keyframes blink{
+  50%{
+    opacity:0.4;
+  }
+}
+
+@keyframes zoomOut{
+  to{
+    transform:scale(2.5);
+    opacity:0;
   }
 }

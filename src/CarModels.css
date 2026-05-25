@@ -1,0 +1,24 @@
+.models-container {
+  text-align: center;
+  padding-top: 40px;
+  color: white;
+}
+
+.models-grid {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.model-card {
+  padding: 20px 30px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.model-card:hover {
+  background: rgba(255,255,255,0.1);
+}

@@ -1,0 +1,42 @@
+body {
+  margin: 0;
+  background: black;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.brands-container {
+  text-align: center;
+  padding-top: 40px;
+}
+
+.brands-grid {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+.brand-card {
+  width: 160px;
+  height: 160px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.brand-card:hover {
+  transform: scale(1.05);
+  background: rgba(255,255,255,0.1);
+}
+
+.brand-card img {
+  width: 60px;
+  margin-bottom: 10px;
+}
