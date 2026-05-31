@@ -1,0 +1,192 @@
+.auth-center {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.glass-box {
+  width: min(420px, 100%);
+  padding: 42px 38px;
+  border-radius: 28px;
+  background: rgba(8, 8, 8, 0.35);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  text-align: center;
+  box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="light"] .glass-box {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.glass-box h1 {
+  margin: 0 0 8px;
+  letter-spacing: 6px;
+  font-size: 1.6rem;
+}
+
+.glass-tagline {
+  margin: 0 0 28px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.role-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.role-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.role-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  box-shadow: var(--shadow-glow);
+}
+
+.glass-input {
+  width: 100%;
+  padding: 14px 16px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.glass-btn {
+  width: 100%;
+  margin-top: 18px;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: white;
+  color: #111;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.glass-btn:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-glow);
+}
+
+.glass-hint {
+  margin-top: 14px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.splash-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-align: center;
+}
+
+.splash-logo {
+  margin: 0;
+  font-size: clamp(3rem, 10vw, 6rem);
+  letter-spacing: 12px;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.splash-sub {
+  margin-top: 16px;
+  color: var(--accent-gold);
+  font-size: 1.15rem;
+  letter-spacing: 3px;
+  font-weight: 300;
+}
+
+.splash-tagline {
+  margin-top: 10px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  letter-spacing: 2px;
+}
+
+.splash-tap {
+  margin-top: 28px;
+  color: var(--text-muted);
+  animation: blink 1.5s infinite;
+}
+
+.splash-zoom {
+  font-size: clamp(3.5rem, 12vw, 7rem);
+  font-weight: 700;
+  letter-spacing: 10px;
+  animation: zoomOut 1.8s forwards ease-in-out;
+}
+
+.welcome-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.welcome-screen h1 {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 4rem);
+  letter-spacing: 8px;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.welcome-fade-out {
+  animation: welcomeFade 1.4s forwards ease;
+}
+
+.auth-video-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity 1.5s ease, filter 1.5s ease;
+}
+
+.auth-video-wrap.fading {
+  opacity: 0;
+  filter: blur(12px);
+  animation: videoFade 1.5s forwards;
+}
+
+.auth-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.auth-video-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--video-overlay);
+}
+
+.auth-content {
+  position: relative;
+  z-index: 5;
+  min-height: 100vh;
+}

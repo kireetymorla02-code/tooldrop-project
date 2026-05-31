@@ -1,8 +1,8 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen } from "@testing-library/react";
+import App from "./App";
 
-test('renders learn react link', () => {
+test("renders ToolDrop splash", () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  expect(screen.getByText(/TOOLDROP/i)).toBeInTheDocument();
+  expect(screen.getByText(/Precision Service\. Delivered\./i)).toBeInTheDocument();
 });
