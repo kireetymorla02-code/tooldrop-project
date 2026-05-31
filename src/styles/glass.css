@@ -36,19 +36,71 @@
 
 .role-row {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-bottom: 16px;
 }
 
 .role-btn {
-  flex: 1;
-  padding: 12px;
+  flex: 1 1 30%;
+  min-width: 100px;
+  padding: 10px 8px;
+  font-size: 0.78rem;
   border-radius: 12px;
   border: 1px solid var(--border-subtle);
   background: var(--bg-elevated);
   color: var(--text-primary);
   cursor: pointer;
   transition: 0.25s ease;
+}
+
+.auth-method-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.auth-method {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.auth-method.active {
+  border-color: var(--accent-gold);
+  color: var(--text-primary);
+  background: var(--accent-soft);
+}
+
+.auth-error {
+  margin-top: 12px;
+  color: #ff8a8a;
+  font-size: 0.85rem;
+}
+
+.auth-fade-out {
+  pointer-events: none;
+}
+
+.google-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 13px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: rgba(255, 255, 255, 0.92);
+  color: #111;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.google-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .role-btn.active {

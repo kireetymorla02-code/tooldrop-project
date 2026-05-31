@@ -1,31 +1,39 @@
 import { NavLink } from "react-router-dom";
 import {
-  HiOutlineSparkles,
-  HiOutlineHeart,
+  HiOutlineBell,
   HiOutlineCog6Tooth,
+  HiOutlineGift,
+  HiOutlineSparkles,
   HiOutlineUserCircle,
   HiOutlineClipboardDocumentList,
   HiOutlineSquares2X2,
+  HiOutlineExclamationTriangle,
 } from "react-icons/hi2";
 import { MdDirectionsCar, MdTwoWheeler, MdDevices } from "react-icons/md";
 import ThemeToggle from "./ThemeToggle";
+import { useCustomer } from "../context/CustomerProvider";
 
 const MAIN_NAV = [
   { to: "/app/home", label: "Dashboard", end: true, Icon: HiOutlineSquares2X2 },
   { to: "/app/cars", label: "Cars", Icon: MdDirectionsCar },
   { to: "/app/bikes", label: "Bikes", Icon: MdTwoWheeler },
   { to: "/app/electronics", label: "Electronics", Icon: MdDevices },
-  { to: "/app/ai-assist", label: "AI Assist", Icon: HiOutlineSparkles },
-  { to: "/app/orders", label: "Orders", Icon: HiOutlineClipboardDocumentList },
-  { to: "/app/favorites", label: "Favorites", Icon: HiOutlineHeart },
+  { to: "/app/orders", label: "My Orders", Icon: HiOutlineClipboardDocumentList },
+  { to: "/app/notifications", label: "Notifications", Icon: HiOutlineBell, badge: true },
+  { to: "/app/ai-assist", label: "AI Assistant", Icon: HiOutlineSparkles },
+  { to: "/app/rewards", label: "Rewards", Icon: HiOutlineGift },
+  { to: "/app/emergency", label: "Emergency", Icon: HiOutlineExclamationTriangle },
 ];
 
 const SECONDARY_NAV = [
-  { to: "/app/settings", label: "Settings", Icon: HiOutlineCog6Tooth },
+  { to: "/app/support", label: "Support", Icon: HiOutlineClipboardDocumentList },
   { to: "/app/profile", label: "Profile", Icon: HiOutlineUserCircle },
+  { to: "/app/settings", label: "Settings", Icon: HiOutlineCog6Tooth },
 ];
 
 export default function Sidebar() {
+  const { unreadCount } = useCustomer();
+
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
@@ -37,7 +45,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        {MAIN_NAV.map(({ to, label, end, Icon }) => (
+        {MAIN_NAV.map(({ to, label, end, Icon, badge }) => (
           <NavLink
             key={to}
             to={to}
@@ -48,6 +56,9 @@ export default function Sidebar() {
           >
             <Icon size={20} />
             <span className="label">{label}</span>
+            {badge && unreadCount > 0 && (
+              <span className="nav-badge">{unreadCount}</span>
+            )}
           </NavLink>
         ))}
       </nav>

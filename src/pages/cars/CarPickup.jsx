@@ -1,32 +1,49 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import PageHeader from "../../components/PageHeader";
+import { PICKUP_FEE } from "../../data/cars";
+import { useCustomer } from "../../context/CustomerProvider";
 
 export default function CarPickup() {
-  const { brand } = useParams();
+  const { brand, model } = useParams();
   const navigate = useNavigate();
+  const { activeBooking, startBooking } = useCustomer();
   const [emergency, setEmergency] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate(`/app/cars/${brand}/payment`);
+    const form = new FormData(e.target);
+    startBooking({
+      ...activeBooking,
+      pickup: {
+        address: form.get("address"),
+        date: form.get("date"),
+        slot: form.get("slot"),
+        notes: form.get("notes"),
+        emergency,
+      },
+    });
+    navigate(`/app/cars/${brand}/${model}/payment`);
   };
 
   return (
     <div>
-      <header className="page-header">
-        <h1>Schedule Pickup</h1>
-        <p>Doorstep collection with live transparency</p>
-      </header>
+      <PageHeader title="Schedule Pickup" subtitle="Doorstep collection · live transparency from pickup to delivery" />
+
+      <div className="pickup-status-banner">
+        <p><strong>Driver:</strong> Will be assigned after payment</p>
+        <p><strong>Pickup fee:</strong> ₹{PICKUP_FEE} only (remaining after inspection)</p>
+      </div>
 
       <form className="form-panel" onSubmit={handleSubmit}>
         <label htmlFor="address">Pickup address</label>
-        <input id="address" type="text" placeholder="Full address" required />
+        <input id="address" name="address" required placeholder="Full address with landmark" />
 
         <label htmlFor="date">Date</label>
-        <input id="date" type="date" required />
+        <input id="date" name="date" type="date" required />
 
-        <label htmlFor="time">Time slot</label>
-        <select id="time" required>
+        <label htmlFor="slot">Time slot</label>
+        <select id="slot" name="slot" required>
           <option value="">Select slot</option>
           <option>09:00 – 11:00</option>
           <option>11:00 – 13:00</option>
@@ -35,20 +52,15 @@ export default function CarPickup() {
         </select>
 
         <label htmlFor="notes">Vehicle notes</label>
-        <textarea id="notes" rows={3} placeholder="Keys, dents, special instructions..." />
+        <textarea id="notes" name="notes" rows={3} placeholder="Keys location, dents, special instructions…" />
 
         <label style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 16 }}>
-          <input
-            type="checkbox"
-            checked={emergency}
-            onChange={(e) => setEmergency(e.target.checked)}
-          />
-          Emergency request
+          <input type="checkbox" checked={emergency} onChange={(e) => setEmergency(e.target.checked)} />
+          Emergency / priority pickup
         </label>
 
         <div className="fee-banner">
-          Pickup fee (demo): <strong>₹200</strong>
-          {emergency && " · Priority surcharge may apply"}
+          Pickup fee: <strong>₹{PICKUP_FEE}</strong> · Final service cost generated after inspection
         </div>
 
         <button type="submit" className="glass-btn" style={{ marginTop: 20 }}>

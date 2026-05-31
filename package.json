@@ -21,7 +21,12 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "npm --prefix server run dev",
+    "server:migrate": "npm --prefix server run db:migrate",
+    "server:seed": "node server/db/seed-phase3.js",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down"
   },
   "eslintConfig": {
     "extends": [

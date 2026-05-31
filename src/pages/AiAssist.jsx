@@ -1,48 +1,85 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-
-const RECOMMENDATIONS = [
-  {
-    title: "Ceramic Coating",
-    reason: "Low mileage + premium vehicle history",
-    savings: "Save ~12%",
-  },
-  {
-    title: "ToolDrop Premium Hub",
-    reason: "Highest rating near you · pickup available",
-    savings: "ETA 2.4 km",
-  },
-  {
-    title: "Brake Inspection",
-    reason: "AI detected wear pattern from last service",
-    savings: "Preventive",
-  },
-];
+import { HiOutlineSparkles } from "react-icons/hi2";
+import PageHeader from "../components/PageHeader";
+import { AI_ASSISTANT_PROMPTS, AI_DEMO_RESPONSES } from "../data/customer";
 
 export default function AiAssist() {
-  return (
-    <div>
-      <header className="page-header">
-        <h1>AI Assist</h1>
-        <p>Dynamic pricing · center matching · failure insights</p>
-      </header>
+  const [messages, setMessages] = useState([
+    { role: "assistant", text: AI_DEMO_RESPONSES.default },
+  ]);
+  const [input, setInput] = useState("");
+  const [typing, setTyping] = useState(false);
 
-      <div className="service-card-grid">
-        {RECOMMENDATIONS.map((item, i) => (
-          <motion.div
-            key={item.title}
-            className="luxury-card"
-            initial={{ opacity: 0, x: -12 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.1 }}
-            style={{ cursor: "default" }}
-          >
-            <span className="ai-tag">AI Recommended</span>
-            <h3 style={{ margin: "12px 0 8px" }}>{item.title}</h3>
-            <p style={{ margin: 0, color: "var(--text-secondary)" }}>{item.reason}</p>
-            <p style={{ margin: "10px 0 0", color: "var(--accent-gold)" }}>{item.savings}</p>
-          </motion.div>
+  const send = (text) => {
+    const userText = text || input.trim();
+    if (!userText) return;
+
+    setMessages((m) => [...m, { role: "user", text: userText }]);
+    setInput("");
+    setTyping(true);
+
+    setTimeout(() => {
+      const reply =
+        AI_DEMO_RESPONSES[userText] ||
+        Object.entries(AI_DEMO_RESPONSES).find(([k]) => userText.toLowerCase().includes(k.toLowerCase().slice(0, 8)))?.[1] ||
+        AI_DEMO_RESPONSES.default;
+      setMessages((m) => [...m, { role: "assistant", text: reply }]);
+      setTyping(false);
+    }, 900);
+  };
+
+  return (
+    <div className="ai-chat-page">
+      <PageHeader
+        eyebrow="ToolDrop AI"
+        title="AI Assistant"
+        subtitle="Booking help · maintenance advice · troubleshooting · center matching"
+      />
+
+      <div className="ai-prompt-row">
+        {AI_ASSISTANT_PROMPTS.map(({ label, prompt }) => (
+          <button key={label} type="button" className="tab-btn" onClick={() => send(prompt)}>
+            {label}
+          </button>
         ))}
       </div>
+
+      <div className="ai-chat-window">
+        {messages.map((msg, i) => (
+          <motion.div
+            key={i}
+            className={`chat-bubble ${msg.role}`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            {msg.role === "assistant" && <HiOutlineSparkles size={16} />}
+            <p>{msg.text}</p>
+          </motion.div>
+        ))}
+        {typing && (
+          <div className="chat-bubble assistant typing">
+            <span className="typing-dots">···</span>
+          </div>
+        )}
+      </div>
+
+      <form
+        className="ai-chat-input"
+        onSubmit={(e) => {
+          e.preventDefault();
+          send();
+        }}
+      >
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Ask about bookings, maintenance, or troubleshooting…"
+        />
+        <button type="submit" className="glass-btn" style={{ margin: 0, width: "auto", padding: "12px 24px" }}>
+          Send
+        </button>
+      </form>
     </div>
   );
 }

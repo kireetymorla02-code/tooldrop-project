@@ -68,23 +68,9 @@ export default function AdminLayout() {
           <div>
             <h2 style={{ margin: "0 0 6px" }}>Operations Dashboard</h2>
             <p style={{ margin: 0, color: "#999" }}>
-              Signed in · {phone || "Admin session"}
+              Super Admin · {phone || "secure session"}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => navigate("/app/home")}
-            style={{
-              padding: "10px 18px",
-              borderRadius: 10,
-              border: "1px solid rgba(255,255,255,0.15)",
-              background: "transparent",
-              color: "white",
-              cursor: "pointer",
-            }}
-          >
-            User App
-          </button>
         </header>
         <Outlet />
       </div>

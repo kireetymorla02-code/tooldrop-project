@@ -1,22 +1,32 @@
-import { SERVICE_CENTERS } from "../data/centers";
+import PageHeader from "../components/PageHeader";
+import { useCustomer } from "../context/CustomerProvider";
+import { getNearbyCenters } from "../data/centers";
 
 export default function Favorites() {
-  const favorites = SERVICE_CENTERS.filter((c) => c.aiRecommended);
+  const { favorites, toggleFavorite, location } = useCustomer();
+  const centers = getNearbyCenters(location?.city || "Hyderabad");
+  const saved = centers.filter((c) => favorites.includes(c.id));
 
   return (
     <div>
-      <header className="page-header">
-        <h1>Favorites</h1>
-        <p>Saved centers & services</p>
-      </header>
-      <div className="center-grid">
-        {favorites.map((center) => (
-          <div key={center.id} className="luxury-card" style={{ cursor: "default" }}>
-            <h3>{center.name}</h3>
-            <p style={{ color: "var(--text-secondary)" }}>★ {center.rating} · {center.distance}</p>
-          </div>
-        ))}
-      </div>
+      <PageHeader eyebrow="Saved" title="Favorites" subtitle="Your preferred service centers" />
+
+      {saved.length ? (
+        <div className="center-grid">
+          {saved.map((center) => (
+            <div key={center.id} className="center-card">
+              <img src={center.image} alt={center.name} style={{ width: "100%", height: 120, objectFit: "cover" }} />
+              <div style={{ padding: 16 }}>
+                <h3>{center.name}</h3>
+                <p className="muted">★ {center.rating} · {center.distance}</p>
+                <button type="button" className="tab-btn" onClick={() => toggleFavorite(center.id)}>Remove</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="muted">Save centers while booking to see them here.</p>
+      )}
     </div>
   );
 }

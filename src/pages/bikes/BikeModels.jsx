@@ -1,33 +1,38 @@
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { BIKE_BRANDS, BIKE_MODELS } from "../../data/bikes";
+import PageHeader, { SearchFilterBar } from "../../components/PageHeader";
+import { getBikeBrand, getBikeModels } from "../../data/bikes";
 
 export default function BikeModels() {
   const { brand } = useParams();
   const navigate = useNavigate();
-  const brandInfo = BIKE_BRANDS.find((b) => b.id === brand);
-  const models = BIKE_MODELS[brand] || [
-    { id: "default", name: `${brandInfo?.name} Standard`, year: 2023, fuel: "Petrol", mileage: "10k km", health: "Good" },
-  ];
+  const brandInfo = getBikeBrand(brand);
+  const models = getBikeModels(brand);
+  const [search, setSearch] = useState("");
+
+  const filtered = useMemo(
+    () => models.filter((m) => m.name.toLowerCase().includes(search.toLowerCase())),
+    [models, search]
+  );
 
   return (
     <div>
-      <header className="page-header">
-        <h1>{brandInfo?.name || brand} Models</h1>
-      </header>
+      <PageHeader title={`${brandInfo?.name || brand} Models`} subtitle="Select your motorcycle" />
+      <SearchFilterBar search={search} onSearch={setSearch} filters={[]} activeFilter="" onFilter={() => {}} />
       <div className="model-grid">
-        {models.map((model) => (
+        {filtered.map((model) => (
           <div
             key={model.id}
             className="model-card"
-            style={{ padding: 20 }}
-            onClick={() => navigate(`/app/bikes/${brand}/services`)}
+            onClick={() => navigate(`/app/bikes/${brand}/${model.id}/services`)}
             role="button"
             tabIndex={0}
           >
-            <h3>{model.name}</h3>
-            <p style={{ color: "var(--text-secondary)" }}>
-              {model.year} · {model.mileage} · {model.health}
-            </p>
+            {model.image && <img src={model.image} alt={model.name} />}
+            <div style={{ padding: 16 }}>
+              <h3>{model.name}</h3>
+              <p className="muted">{model.year} · {model.mileage}</p>
+            </div>
           </div>
         ))}
       </div>

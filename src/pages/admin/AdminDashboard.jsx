@@ -1,24 +1,35 @@
 import { motion } from "framer-motion";
-
-const STATS = [
-  { label: "Current Orders", value: "24", trend: "+3 today" },
-  { label: "Ongoing Repairs", value: "11", trend: "6 in QC" },
-  { label: "Pending Pickups", value: "7", trend: "2 urgent" },
-  { label: "Revenue (demo)", value: "₹4.2L", trend: "+18% MoM" },
-];
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthProvider";
+import { fetchAdminStats } from "../../services/adminService";
 
 const PANELS = [
-  { title: "Assigned Mechanics", desc: "12 active · 3 available" },
-  { title: "Customer Reports", desc: "8 pending review" },
-  { title: "AI Diagnostics", desc: "5 new failure analyses" },
-  { title: "Settlement Queue", desc: "₹1.1L awaiting payout" },
+  { title: "Current Orders", desc: "Live pipeline across all centers", to: "/admin/orders" },
+  { title: "Payments", desc: "Pickup fees & settlement ledger", to: "/admin/payments" },
+  { title: "Analytics", desc: "Volume, revenue, completion rate", to: "/admin/analytics" },
+  { title: "Reviews", desc: "Post-delivery customer feedback", to: "/admin/reviews" },
 ];
 
 export default function AdminDashboard() {
+  const { token } = useAuth();
+  const [stats, setStats] = useState({ activeOrders: 0, deliveredOrders: 0, revenue: 0 });
+
+  useEffect(() => {
+    fetchAdminStats(token).then((d) => setStats(d.stats || stats)).catch(() => {});
+  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const STAT_ITEMS = [
+    { label: "Active Orders", value: String(stats.activeOrders), trend: "In progress" },
+    { label: "Delivered", value: String(stats.deliveredOrders), trend: "Completed" },
+    { label: "Pickup Revenue", value: `₹${stats.revenue.toLocaleString("en-IN")}`, trend: "Collected fees" },
+    { label: "Platform Status", value: "Live", trend: "Production ready" },
+  ];
+
   return (
     <div>
       <div className="admin-stats">
-        {STATS.map((stat, i) => (
+        {STAT_ITEMS.map((stat, i) => (
           <motion.div
             key={stat.label}
             className="admin-stat"
@@ -37,16 +48,11 @@ export default function AdminDashboard() {
 
       <div className="admin-panel-grid">
         {PANELS.map((panel, i) => (
-          <motion.div
-            key={panel.title}
-            className="admin-luxury-card"
-            whileHover={{ scale: 1.02 }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 + i * 0.08 }}
-          >
-            <h3 style={{ margin: "0 0 8px" }}>{panel.title}</h3>
-            <p style={{ margin: 0, color: "#aaa" }}>{panel.desc}</p>
+          <motion.div key={panel.title} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.05 }}>
+            <Link to={panel.to} className="admin-luxury-card" style={{ display: "block", textDecoration: "none", color: "inherit" }}>
+              <h3 style={{ margin: "0 0 8px" }}>{panel.title}</h3>
+              <p style={{ margin: 0, color: "#aaa" }}>{panel.desc}</p>
+            </Link>
           </motion.div>
         ))}
       </div>

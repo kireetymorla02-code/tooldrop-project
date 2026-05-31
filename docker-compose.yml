@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tooldrop-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tooldrop
+      POSTGRES_PASSWORD: tooldrop
+      POSTGRES_DB: tooldrop
+    ports:
+      - "5432:5432"
+    volumes:
+      - tooldrop_pg_data:/var/lib/postgresql/data
+
+volumes:
+  tooldrop_pg_data:

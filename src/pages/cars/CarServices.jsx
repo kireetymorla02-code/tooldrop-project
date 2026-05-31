@@ -1,36 +1,39 @@
-import { motion } from "framer-motion";
 import { useNavigate, useParams } from "react-router-dom";
-import { CAR_SERVICES } from "../../data/cars";
+import { motion } from "framer-motion";
+import PageHeader from "../../components/PageHeader";
+import { VEHICLE_SERVICES } from "../../data/cars";
+import { useCustomer } from "../../context/CustomerProvider";
 
 export default function CarServices() {
-  const { brand } = useParams();
+  const { brand, model } = useParams();
   const navigate = useNavigate();
+  const { startBooking } = useCustomer();
+
+  const selectService = (service) => {
+    startBooking({ type: "car", brand, model, service });
+    navigate(`/app/cars/${brand}/${model}/centers`);
+  };
 
   return (
     <div>
-      <header className="page-header">
-        <h1>Service Types</h1>
-        <p>AI-tagged options · dynamic pricing demo</p>
-      </header>
+      <PageHeader title="Service Types" subtitle="AI-tagged premium options · dynamic pricing after inspection" />
       <div className="service-card-grid">
-        {CAR_SERVICES.map((service, i) => (
+        {VEHICLE_SERVICES.map((service, i) => (
           <motion.div
             key={service.id}
             className="luxury-card"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.04 }}
-            onClick={() => navigate(`/app/cars/${brand}/centers`)}
+            transition={{ delay: i * 0.03 }}
+            onClick={() => selectService(service)}
             role="button"
             tabIndex={0}
           >
-            <h3 style={{ margin: "0 0 8px" }}>
+            <h3>
               {service.name}
               {service.aiTag && <span className="ai-tag">AI · {service.aiTag}</span>}
             </h3>
-            <p style={{ margin: 0, color: "var(--text-secondary)" }}>
-              {service.time} · {service.price}
-            </p>
+            <p className="muted">{service.time} · {service.price}</p>
           </motion.div>
         ))}
       </div>
