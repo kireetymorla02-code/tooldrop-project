@@ -21,4 +21,14 @@ function resolveRoleForNewUser(requestedRole, contact) {
   return role;
 }
 
-module.exports = { sanitizeRole, resolveRoleForNewUser, ALLOWED_ROLES };
+/** Apply role chosen on login screen (honored in dev; allowlist-gated in production). */
+function resolveRoleOnLogin(requestedRole, contact, existingRole) {
+  const requested = sanitizeRole(requestedRole);
+  if (process.env.NODE_ENV !== "production") return requested;
+
+  const allowed = resolveRoleForNewUser(requested, contact);
+  if (allowed === requested) return requested;
+  return existingRole || "customer";
+}
+
+module.exports = { sanitizeRole, resolveRoleForNewUser, resolveRoleOnLogin, ALLOWED_ROLES };

@@ -1,6 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
+const fs = require("fs");
 const authRoutes = require("./routes/auth.routes");
 const usersRoutes = require("./routes/users.routes");
 const ordersRoutes = require("./routes/orders.routes");
@@ -39,6 +41,10 @@ app.use(
   })
 );
 app.use(express.json());
+
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+app.use("/api/uploads", express.static(uploadsDir));
 
 app.get("/api/health", async (_req, res) => {
   try {

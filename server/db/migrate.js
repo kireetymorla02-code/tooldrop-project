@@ -8,6 +8,8 @@ async function migrate() {
   await pool.query(schema);
   const phase3 = fs.readFileSync(path.join(__dirname, "schema-phase3.sql"), "utf8");
   await pool.query(phase3);
+  const inspections = fs.readFileSync(path.join(__dirname, "schema-phase3-inspections.sql"), "utf8");
+  await pool.query(inspections);
   console.log("Database migration completed.");
   await pool.end();
 }

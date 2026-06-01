@@ -4,15 +4,19 @@ const {
   getPartsForOrder,
   respondToPart,
 } = require("../services/partVerification.service");
+const { getReportsForOrder } = require("../services/inspectionReport.service");
 
 const router = express.Router();
 
 router.get("/orders/:orderId", requireAuth, async (req, res) => {
   try {
-    const parts = await getPartsForOrder(req.params.orderId, req.user.user_id);
-    res.json({ parts });
+    const [parts, reports] = await Promise.all([
+      getPartsForOrder(req.params.orderId, req.user.user_id),
+      getReportsForOrder(req.params.orderId, req.user.user_id),
+    ]);
+    res.json({ parts, reports });
   } catch (err) {
-    res.status(500).json({ error: "Failed to load part verifications" });
+    res.status(500).json({ error: "Failed to load order service data" });
   }
 });
 

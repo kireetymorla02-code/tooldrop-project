@@ -1,5 +1,5 @@
 const { pool } = require("../config/db");
-const { sanitizeRole, resolveRoleForNewUser } = require("./role.service");
+const { sanitizeRole, resolveRoleForNewUser, resolveRoleOnLogin } = require("./role.service");
 
 async function findByContact({ email, phone }) {
   if (email) {
@@ -25,30 +25,42 @@ async function findById(userId) {
   return r.rows[0] || null;
 }
 
+async function assignCenterIdForRole(role) {
+  if (role !== "center_admin") return null;
+  const hub = await pool.query(`SELECT center_id FROM service_centers WHERE slug = 'c1' LIMIT 1`);
+  return hub.rows[0]?.center_id || null;
+}
+
 async function upsertFromAuth({ email, phone, role, firebaseUid, name, profileImage }) {
   const contact = email || phone || "";
   const existing = await findByContact({ email, phone });
 
   if (existing) {
+    const nextRole = resolveRoleOnLogin(role, contact, existing.role);
+    let centerId = existing.center_id;
+    if (nextRole === "center_admin") {
+      if (!centerId) centerId = await assignCenterIdForRole(nextRole);
+    } else {
+      centerId = null;
+    }
+
     const updated = await pool.query(
       `UPDATE users SET
-         firebase_uid = COALESCE($2, firebase_uid),
-         name = COALESCE($3, name),
-         profile_image = COALESCE($4, profile_image),
+         role = $2,
+         center_id = $3,
+         firebase_uid = COALESCE($4, firebase_uid),
+         name = COALESCE($5, name),
+         profile_image = COALESCE($6, profile_image),
          updated_at = NOW()
        WHERE user_id = $1
        RETURNING *`,
-      [existing.user_id, firebaseUid || null, name || null, profileImage || null]
+      [existing.user_id, nextRole, centerId, firebaseUid || null, name || null, profileImage || null]
     );
     return updated.rows[0];
   }
 
   const safeRole = resolveRoleForNewUser(role, contact);
-  let centerId = null;
-  if (safeRole === "center_admin") {
-    const hub = await pool.query(`SELECT center_id FROM service_centers WHERE slug = 'c1' LIMIT 1`);
-    centerId = hub.rows[0]?.center_id || null;
-  }
+  const centerId = await assignCenterIdForRole(safeRole);
 
   const inserted = await pool.query(
     `INSERT INTO users (email, phone, role, firebase_uid, name, profile_image, center_id)

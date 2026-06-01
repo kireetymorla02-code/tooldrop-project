@@ -1,5 +1,5 @@
 const { pool } = require("../config/db");
-const { createNotification } = require("./notification.service");
+const { createNotification, notifyRoleUsers } = require("./notification.service");
 
 const TRACKING_STEPS = [
   "Order Created",
@@ -15,8 +15,8 @@ const TRACKING_STEPS = [
   "Delivered",
 ];
 
-function formatOrder(row) {
-  return {
+function formatOrder(row, customer) {
+  const base = {
     id: row.public_id,
     orderId: row.order_id,
     type: row.order_type,
@@ -44,6 +44,14 @@ function formatOrder(row) {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
+  if (customer || row.customer_name) {
+    base.customer = {
+      name: customer?.name || row.customer_name,
+      phone: customer?.phone || row.customer_phone,
+      email: customer?.email || row.customer_email,
+    };
+  }
+  return base;
 }
 
 async function generatePublicId() {
@@ -142,7 +150,31 @@ async function createOrder(userId, payload) {
       message: `Order ${publicId} confirmed. Pickup fee ₹${payload.pickupFeePaid || 200} received.`,
     });
 
-    return formatOrder(order);
+    const customerRow = await pool.query(
+      `SELECT name, phone, email FROM users WHERE user_id = $1`,
+      [userId]
+    );
+    const customer = customerRow.rows[0];
+    const customerLabel = customer?.name || customer?.phone || "Customer";
+
+    await notifyRoleUsers("super_admin", {
+      orderId: order.order_id,
+      type: "new_order",
+      title: "New Customer Order",
+      message: `${publicId} · ${order.vehicle_label || "Service"} · ${customerLabel} · ₹${payload.pickupFeePaid || 200} pickup paid`,
+    });
+
+    if (centerId) {
+      await notifyRoleUsers("center_admin", {
+        orderId: order.order_id,
+        type: "new_order",
+        title: "New Booking Assigned",
+        message: `${publicId} · ${order.service_name} · Pickup ${pickup.slot || "scheduled"}`,
+        centerId,
+      });
+    }
+
+    return formatOrder(order, customer);
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;
@@ -261,20 +293,59 @@ async function advanceOrderStatus(publicId, actorRole, centerId) {
 }
 
 async function getCenterOrders(centerId, status) {
-  let query = `SELECT * FROM orders WHERE center_id = $1`;
+  let query = `SELECT o.*, u.name AS customer_name, u.phone AS customer_phone, u.email AS customer_email
+     FROM orders o
+     JOIN users u ON u.user_id = o.user_id
+     WHERE o.center_id = $1`;
   const params = [centerId];
   if (status && status !== "all") {
-    query += ` AND status = $2`;
+    query += ` AND o.status = $2`;
     params.push(status);
   }
-  query += ` ORDER BY created_at DESC LIMIT 100`;
+  query += ` ORDER BY o.created_at DESC LIMIT 100`;
   const result = await pool.query(query, params);
-  return result.rows.map(formatOrder);
+  return result.rows.map((row) => formatOrder(row));
+}
+
+async function getCenterOrderDetail(publicId, centerId) {
+  const result = await pool.query(
+    `SELECT o.*, u.name AS customer_name, u.phone AS customer_phone, u.email AS customer_email
+     FROM orders o
+     JOIN users u ON u.user_id = o.user_id
+     WHERE o.public_id = $1 AND o.center_id = $2
+     LIMIT 1`,
+    [publicId, centerId]
+  );
+  if (!result.rows[0]) return null;
+  const row = result.rows[0];
+  const events = await getStatusEvents(row.order_id);
+  return { order: formatOrder(row), events };
 }
 
 async function getAllOrders() {
-  const result = await pool.query(`SELECT * FROM orders ORDER BY created_at DESC LIMIT 200`);
-  return result.rows.map(formatOrder);
+  const result = await pool.query(
+    `SELECT o.*, u.name AS customer_name, u.phone AS customer_phone, u.email AS customer_email
+     FROM orders o
+     JOIN users u ON u.user_id = o.user_id
+     ORDER BY o.created_at DESC
+     LIMIT 200`
+  );
+  return result.rows.map((row) => formatOrder(row));
+}
+
+async function getAdminOrderDetail(publicId) {
+  const result = await pool.query(
+    `SELECT o.*, u.name AS customer_name, u.phone AS customer_phone, u.email AS customer_email
+     FROM orders o
+     JOIN users u ON u.user_id = o.user_id
+     WHERE o.public_id = $1
+     LIMIT 1`,
+    [publicId]
+  );
+  if (!result.rows[0]) return null;
+  const row = result.rows[0];
+  const events = await getStatusEvents(row.order_id);
+  return { order: formatOrder(row), events };
 }
 
 async function getAdminStats() {
@@ -302,6 +373,8 @@ module.exports = {
   updateOrderStatus,
   advanceOrderStatus,
   getCenterOrders,
+  getCenterOrderDetail,
   getAllOrders,
+  getAdminOrderDetail,
   getAdminStats,
 };

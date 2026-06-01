@@ -49,10 +49,26 @@ async function markAllRead(userId) {
   await pool.query(`UPDATE notifications SET read = TRUE WHERE user_id = $1`, [userId]);
 }
 
+async function notifyRoleUsers(role, { orderId, type, title, message, centerId }) {
+  let query = `SELECT user_id FROM users WHERE role = $1`;
+  const params = [role];
+  if (centerId) {
+    query += ` AND center_id = $2`;
+    params.push(centerId);
+  }
+  const result = await pool.query(query, params);
+  await Promise.all(
+    result.rows.map((row) =>
+      createNotification({ userId: row.user_id, orderId, type, title, message })
+    )
+  );
+}
+
 module.exports = {
   createNotification,
   getNotificationsForUser,
   markRead,
   markAllRead,
+  notifyRoleUsers,
   formatNotification,
 };
